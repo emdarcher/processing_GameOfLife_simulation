@@ -74,8 +74,9 @@ void draw(){
      
   
     //while(true){
-        
-        println(generation_count);
+        println("Generation Count: " + generation_count);
+        //print(generation_count);
+        //print("\n\r");
         
         //increment the generation count
         generation_count++;
