@@ -181,8 +181,8 @@ void reset_grid(){
     byte k;
     for(k=0;k<X_AXIS_LEN;k++){
         
-        tempint = (int)((Math.random())*255);
-        //tempint = (int)random(0,255);
+        //tempint = (int)((Math.random())*255);
+        tempint = (int)random(0,255);
          
         //fb[k]=0x00;
         fb[k] = (byte)(tempint & 0xff); 
