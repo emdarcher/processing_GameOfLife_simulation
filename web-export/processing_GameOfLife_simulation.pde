@@ -51,7 +51,9 @@ short generation_count=0;
 
 void init_size(){
         //size(256,64);
-        size(512,128);
+        //size(512,128);
+        
+        size((X_AXIS_LEN<<4),(Y_AXIS_LEN<<4));
 }
 
 void delay(int delay_time)
@@ -73,7 +75,7 @@ void draw(){
   
     //while(true){
         
-        //println(generation_count);
+        println(generation_count);
         
         //increment the generation count
         generation_count++;
