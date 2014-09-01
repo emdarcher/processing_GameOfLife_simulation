@@ -51,7 +51,7 @@ short generation_count=0;
 
 void init_size(){
         //size(256,64);
-        size(300,80);
+        size(512,128);
 }
 
 void delay(int delay_time)
@@ -99,13 +99,13 @@ void fb_to_rect_grid(int x_begin, int y_begin, byte in_fb[], color on_color, col
                     if((byte)((in_fb[x_cor]) & (byte)(1<<(y_cor)))!=0){
                             //fill(on_color);
                             fill(0);
-                            rect((x_cor<<3),(y_cor<<3),(1<<3),(1<<3));  
+                            rect((x_cor<<4),(y_cor<<4),(1<<4),(1<<4));  
                             //set(x_cor,y_cor,pixel_color_black);
                             //set(x_cor,y_cor,#FFF967);
                     } else {
                             //fill(off_color);
                             fill(255);
-                            rect((x_cor<<3),(y_cor<<3),(1<<3),(1<<3));
+                            rect((x_cor<<4),(y_cor<<4),(1<<4),(1<<4));
                             //set(x_cor,y_cor,pixel_color_white);
                             // set(x_cor,y_cor,#01fffd);
                     }
@@ -122,14 +122,14 @@ void fb_to_ellipse_grid(int x_begin, int y_begin, byte in_fb[], color on_color, 
                             ellipseMode(CORNER);
                             fill(on_color);
                             //fill(0);
-                            ellipse((x_cor<<3),(y_cor<<3),(1<<3),(1<<3));  
+                            ellipse((x_cor<<4),(y_cor<<4),(1<<4),(1<<4));  
                             //set(x_cor,y_cor,pixel_color_black);
                             //set(x_cor,y_cor,#FFF967);
                     } else {
                             ellipseMode(CORNER);
                             fill(off_color);
                             //fill(255);
-                            ellipse((x_cor<<3),(y_cor<<3),(1<<3),(1<<3));
+                            ellipse((x_cor<<4),(y_cor<<4),(1<<4),(1<<4));
                             //set(x_cor,y_cor,pixel_color_white);
                             // set(x_cor,y_cor,#01fffd);
                     }
