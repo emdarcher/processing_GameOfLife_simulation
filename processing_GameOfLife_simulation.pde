@@ -1,11 +1,5 @@
 //import java.lang.Object;
 //import java.lang.Math;
-//public class GameOfLife_sim_edit extends PApplet{
-
-    //static public void main(String args[]) {
-    //   PApplet.main(new String[] { "GameOfLife_sim_edit2" });
-   // }
-
   
 //instead of #defines in the C code
 short X_AXIS_LEN = 32; //length of x axis
@@ -39,21 +33,25 @@ byte old_low_diff_count=0;
 short med_diff_count=0;
 short old_med_diff_count=0;
 
-//void fb_to_rect_grid(int x_begin, int y_begin, byte in_fb[], color on_color, color off_color); 
 
+
+//void fb_to_rect_grid(int x_begin, int y_begin, byte in_fb[], color on_color, color off_color); 
 //void push_byte_to_grid(short x_row, byte x_byte);
 
 short generation_count=0;
 
 //void init_button();
-
 //void reset_grid();
 
 void init_size(){
         //size(256,64);
         //size(512,128);
         
-        size((X_AXIS_LEN<<4),(Y_AXIS_LEN<<4));
+        //makes the size using X_AXIS_LEN*16 and Y_AXIS_LEN*16, 
+        //(left shift by 4 multiplies by 16, 2^4 = 16),
+        //example:
+        //(1<<4) = 16 = 0b00010000, (8<<4) = 8*16 = 128 = 0b10000000;
+        size((X_AXIS_LEN<<4),(Y_AXIS_LEN<<4)); 
 }
 
 void delay(int delay_time)
@@ -95,48 +93,43 @@ void draw(){
 }
 
 void fb_to_rect_grid(int x_begin, int y_begin, byte in_fb[], color on_color, color off_color){
-    
-    //for(int y_cor=y_begin;y_cor<Y_AXIS_LEN;y_cor++){
-            for(int x_cor=x_begin;x_cor<X_AXIS_LEN;x_cor++){
-            for(int y_cor=y_begin;y_cor<Y_AXIS_LEN;y_cor++){
-                    if((byte)((in_fb[x_cor]) & (byte)(1<<(y_cor)))!=0){
-                            //fill(on_color);
-                            fill(0);
-                            rect((x_cor<<4),(y_cor<<4),(1<<4),(1<<4));  
-                            //set(x_cor,y_cor,pixel_color_black);
-                            //set(x_cor,y_cor,#FFF967);
-                    } else {
-                            //fill(off_color);
-                            fill(255);
-                            rect((x_cor<<4),(y_cor<<4),(1<<4),(1<<4));
-                            //set(x_cor,y_cor,pixel_color_white);
-                            // set(x_cor,y_cor,#01fffd);
-                    }
+    //sends a framebuffer to a grid of rectangles
+    for(int x_cor=x_begin;x_cor<X_AXIS_LEN;x_cor++){
+        for(int y_cor=y_begin;y_cor<Y_AXIS_LEN;y_cor++){
+            if((byte)((in_fb[x_cor]) & (byte)(1<<(y_cor)))!=0){
+            //if the bit in in_fb is set the turn on part of grid 
+                fill(on_color);
+                //fill(0);
+                rect((x_cor<<4),(y_cor<<4),(1<<4),(1<<4));  
+                //set(x_cor,y_cor,pixel_color_black);
+                //set(x_cor,y_cor,#FFF967);
+            } else {
+                fill(off_color);
+                //fill(255);
+                rect((x_cor<<4),(y_cor<<4),(1<<4),(1<<4));
+                //set(x_cor,y_cor,pixel_color_white);
+                // set(x_cor,y_cor,#01fffd);
             }
+        }
     }
 }
 void fb_to_ellipse_grid(int x_begin, int y_begin, byte in_fb[], color on_color, color off_color){
-    
-    //for(int y_cor=y_begin;y_cor<Y_AXIS_LEN;y_cor++){
-            for(int x_cor=x_begin;x_cor<X_AXIS_LEN;x_cor++){
-            for(int y_cor=y_begin;y_cor<Y_AXIS_LEN;y_cor++){
-                    if((byte)((in_fb[x_cor]) & (byte)(1<<(y_cor)))!=0){
-                            
-                            ellipseMode(CORNER);
-                            fill(on_color);
-                            //fill(0);
-                            ellipse((x_cor<<4),(y_cor<<4),(1<<4),(1<<4));  
-                            //set(x_cor,y_cor,pixel_color_black);
-                            //set(x_cor,y_cor,#FFF967);
-                    } else {
-                            ellipseMode(CORNER);
-                            fill(off_color);
-                            //fill(255);
-                            ellipse((x_cor<<4),(y_cor<<4),(1<<4),(1<<4));
-                            //set(x_cor,y_cor,pixel_color_white);
-                            // set(x_cor,y_cor,#01fffd);
-                    }
+    //sends a framebuffer to a grid of ellipses
+    for(int x_cor=x_begin;x_cor<X_AXIS_LEN;x_cor++){
+        for(int y_cor=y_begin;y_cor<Y_AXIS_LEN;y_cor++){
+            if((byte)((in_fb[x_cor]) & (byte)(1<<(y_cor)))!=0){
+            //if the bit in in_fb is set the turn on part of grid 
+                ellipseMode(CORNER);
+                fill(on_color);
+                //fill(0);
+                ellipse((x_cor<<4),(y_cor<<4),(1<<4),(1<<4));  
+            } else {
+                ellipseMode(CORNER);
+                fill(off_color);
+                //fill(255);
+                ellipse((x_cor<<4),(y_cor<<4),(1<<4),(1<<4));
             }
+        }
     }
 }
 
@@ -158,23 +151,16 @@ void clear_fb(){
 }
 
 void push_fb(){
-//pushes frambuffer into the ht1632c chip in the display
+//pushes frambuffer into the virtual display
     color pixel_color_black = ((0xFF<<24)|(0x00<<16)|(0x00<<8)|(0x00<<0));
     color pixel_color_white = ((0xFF<<24)|(0xFF<<16)|(0xFF<<8)|(0xFF<<0));
     
     //color set_color = #ccff66;
-    color set_color = #66ff66;
+    color set_color = #66ff66; //color to use for set (on) bits int the bitmap
     //color clear_color = #dddddd;
-    color clear_color = #8e8e8e;
-    //fb_to_rect_grid(0,0,fb,pixel_color_black,pixel_color_white);
-    //fb_to_ellipse_grid(0,0,fb,pixel_color_black,pixel_color_white);
-    fb_to_ellipse_grid(0,0,fb,set_color,clear_color);
-    //char i=X_AXIS_LEN;
-    //while(i--)
-    //{
-    //    //ht1632c_data8((i*2),fb[i]);
-    //    
-    //}
+    color clear_color = #8e8e8e; //color to use for cleared (off) bits in bitmap
+    
+    fb_to_ellipse_grid(0,0,fb,set_color,clear_color); //send the framebuffer to the grid
 }
 
 
@@ -184,14 +170,12 @@ void reset_grid(){
     byte k;
     for(k=0;k<X_AXIS_LEN;k++){
         
-        //tempint = (int)((Math.random())*255);
-        tempint = (int)random(0,255);
+        //tempint = (int)((Math.random())*255); //use if in Java Mode
+        tempint = (int)random(0,255); //use in Java or JavaScript Mode (default Processing)
          
         //fb[k]=0x00;
         fb[k] = (byte)(tempint & 0xff); 
         //fb[k] = (byte)random(0,255);
-        
-        //fb[k] = ((byte)((Math.random())*((byte)255)) & (byte)0xff);
     }
     generation_count=0;
 }
@@ -207,7 +191,7 @@ byte get_current_pixel_state(byte[] in_byte, short x,short y){
     if(y < 0){ y = (short)(Y_AXIS_LEN - 1);}//else{y=0;}
     if(y == Y_AXIS_LEN) {y = 0;}
     
-    //return the value
+    //return the value of the bit/pixel in question
     return (byte)(in_byte[x] & (1<<y));
 }
 
@@ -248,25 +232,18 @@ byte get_new_pixel_state(byte in_states[], short x,short y){
 void get_new_states(){
 //find all the new states and put them in the buffer
     
-    //copy the current stuff into storage
-    
-    //short x=X_AXIS_LEN;
-    //while(x > 0){
+    //copy the next generation values into state_storage.
     for(short x=0;x<X_AXIS_LEN;x++){  
-        //short y=Y_AXIS_LEN;
-        //while(y-- > 0){
         for(short y=0;y<Y_AXIS_LEN;y++){
             if(get_new_pixel_state(fb, x, y)!=0){
                 state_storage[x] |= (1<<y);
             } else {
                 state_storage[x] &= ~(1<<y);
             }
-            //y--;
         }
-        //x--;
     }
     //store the difference between the two generations in diff_val
-    //to be used in finding when to reset.
+    //to be used in finding when to reset when not enough action going on.
     byte diff_val= get_difference(state_storage,fb);
     
     if((diff_val <= 4)){
@@ -286,17 +263,8 @@ void get_new_states(){
             med_diff_count--;
         }
     }
-    /*
-    #if DO_YOU_WANT_BUTTON_INT0==0
-    //if you don't want to use INT0 for button
-    //then this "if" statement will compile
-    //which just checks the button pin's state whenever
-    //this function runs
-    if(bit_is_clear(BUTTON_PIN, BUTTON_BIT)){
-        reset_grid();
-    } 
-    else 
-    #endif*/
+    
+    
     if(low_diff_count > LOW_DIFF_THRESHOLD){
     //if low_diff_count is above threshold, reset
         low_diff_count=0;
@@ -317,14 +285,12 @@ void get_new_states(){
     }
 }
 
-byte get_difference(byte[] a,byte[] b)
-{//gets the amount of differences between two generations
-    byte x_v,y_v,diff=0;
-
-    for(x_v=0; x_v < X_AXIS_LEN; x_v++)
-    {
-        for(y_v=0; y_v < Y_AXIS_LEN; y_v++)
-        {
+byte get_difference(byte[] a,byte[] b){
+//gets the amount of differences between two generations
+    
+    byte x_v,y_v,diff=0;//local variables for things
+    for(x_v=0; x_v < X_AXIS_LEN; x_v++){
+        for(y_v=0; y_v < Y_AXIS_LEN; y_v++){
             //if changed from 0 to 1 or vise-versa, then increment the difference value
             if(( (get_current_pixel_state(a,x_v,y_v)!=0) && (get_current_pixel_state(b,x_v,y_v) == 0)) 
             || ((get_current_pixel_state(a,x_v,y_v)==0) && (get_current_pixel_state(b,x_v,y_v)!=0)))
@@ -333,40 +299,20 @@ byte get_difference(byte[] a,byte[] b)
             }
         }
     }
-    return diff;
+    return diff; //return the difference value
 }
-/*
-void display_byte_bitmap_rectPixels( byte inBMP[], int bmp_charlen, int x_begin, int y_begin ){
-                                //RGB
-        color pixel_color_black = ((0x00<<16)|(0x00<<8)|(0x00<<0));
-        color pixel_color_white = ((0xFF<<16)|(0xFF<<8)|(0xFF<<0));
-          
-                for(int y_cor=y_begin;y_cor<((bmp_charlen));y_cor++){
-                        for(int x_cor=x_begin;x_cor<8;x_cor++){
-                                if(((byte)(inBMP[y_cor]) & ((1<<7) >> x_cor))>0){
-                                        fill(0);
-                                        rect((x_cor<<3),(y_cor<<3),(1<<3),(1<<3));  
-                                        //set(x_cor,y_cor,pixel_color_black);
-                                        //set(x_cor,y_cor,#FFF967);
-                                } else {
-                                        fill(255);
-                                        rect((x_cor<<3),(y_cor<<3),(1<<3),(1<<3));
-                                        //set(x_cor,y_cor,pixel_color_white);
-                                        // set(x_cor,y_cor,#01fffd);
-                                }
-                        }
-                }
-}*/
-
-//}
 
 /*
-SEVEN SEGMENT VIRTUAL DISPLAY CODE
+* SEVEN SEGMENT VIRTUAL DISPLAY CODE
+* will be made later, maybe.
+* It will have code for a virtual 7 segment display to be used to show
+* the generation count, like on the original hardware version.
 */
 
+//bytes to store 7 segment values for numbers 0-9 plus 'E' for error case
 byte[] number_seg_bytes = {
-//       unconfigured
-//ABCDEFG^
+//                     unconfigured
+//              ABCDEFG^
 (byte)0xFD,//0b11111101,//0
 (byte)0x60,//0b01100000,//1
 (byte)0xDB,//0b11011011,//2
